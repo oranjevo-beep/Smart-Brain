@@ -5,6 +5,8 @@ import Navigation from './components/Navigation/Navigation';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Overlay from './components/Overlay/Overlay';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
+import Regester from './components/Regester/Regester';
+import SignIn from './components/SignIn/SignIn';
 
 const returnClarifaiRequestOption = (imageURL) => {
   const PAT = '981e9e4c64504e9ea20b68908fb60552';
@@ -51,6 +53,7 @@ class App extends Component {
       box: {},
       overlayIsHidden: true,
       ImageIsHidden: true,
+      route: 'signin',
     };
   }
   calculateFaceLocation = (data) => {
@@ -116,25 +119,36 @@ class App extends Component {
     this.setState({ overlayIsHidden: !this.state.overlayIsHidden });
     this.setState({ ImageIsHidden: !this.state.ImageIsHidden });
   };
+  onRouteChange = (route) => {
+    this.setState({ route });
+  };
   render() {
     return (
       <div className="container mx-auto px-4 ">
+        {this.state.route === 'home' ? (
+          <div>
+            <Navigation onRouteChange={this.onRouteChange} />
+            <ImageLinkForm
+              onInputChange={this.onInputChange}
+              onBtnSubmit={this.onBtnSubmit}
+            />
+            <Overlay
+              overlayIsHidden={this.state.overlayIsHidden}
+              closeModal={this.closeModal}
+            />
+            <FaceRecognition
+              closeModal={this.closeModal}
+              imageIsHidden={this.state.ImageIsHidden}
+              imageUrl={this.state.imageUrl}
+              box={this.state.box}
+            />
+          </div>
+        ) : this.state.route === 'signin' ? (
+          <SignIn onRouteChange={this.onRouteChange} />
+        ) : (
+          <Regester onRouteChange={this.onRouteChange} />
+        )}
         <ParticlesBg type="lines" bg={true} />
-        <Navigation />
-        <ImageLinkForm
-          onInputChange={this.onInputChange}
-          onBtnSubmit={this.onBtnSubmit}
-        />
-        <Overlay
-          overlayIsHidden={this.state.overlayIsHidden}
-          closeModal={this.closeModal}
-        />
-        <FaceRecognition
-          closeModal={this.closeModal}
-          imageIsHidden={this.state.ImageIsHidden}
-          imageUrl={this.state.imageUrl}
-          box={this.state.box}
-        />
       </div>
     );
   }

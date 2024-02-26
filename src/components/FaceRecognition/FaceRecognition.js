@@ -5,7 +5,7 @@ const FaceRecognition = ({ closeModal, imageIsHidden, imageUrl, box }) => {
       className={
         imageIsHidden
           ? 'hidden'
-          : 'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-[500px]'
+          : 'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 max-w-[500px]'
       }
     >
       <div className="relative">
