@@ -8,42 +8,6 @@ import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Regester from './components/Regester/Regester';
 import SignIn from './components/SignIn/SignIn';
 
-const returnClarifaiRequestOption = (imageURL) => {
-  const PAT = '981e9e4c64504e9ea20b68908fb60552';
-  // Specify the correct user_id/app_id pairings
-  // Since you're making inferences outside your app's scope
-  const USER_ID = '7bw8yfvn31nd';
-  const APP_ID = 'test';
-  // Change these to whatever model and image URL you want to use
-
-  const IMAGE_URL = imageURL;
-  const raw = JSON.stringify({
-    user_app_id: {
-      user_id: USER_ID,
-      app_id: APP_ID,
-    },
-    inputs: [
-      {
-        data: {
-          image: {
-            url: IMAGE_URL,
-            // "base64": IMAGE_BYTES_STRING
-          },
-        },
-      },
-    ],
-  });
-  const requestOptions = {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      Authorization: 'Key ' + PAT,
-    },
-    body: raw,
-  };
-  return requestOptions;
-};
-
 class App extends Component {
   constructor() {
     super();
@@ -54,74 +18,99 @@ class App extends Component {
       overlayIsHidden: true,
       ImageIsHidden: true,
       route: 'signin',
+      isSignedIn: false,
+      imageArray: [],
+      isLoading: true,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: '',
+      },
     };
   }
-  calculateFaceLocation = (data) => {
-    const clarifaiFace =
-      data.outputs[0].data.regions[0].region_info.bounding_box;
+  // load user
+  loadUser = (data) => {
+    this.setState({
+      user: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        entries: data.entries,
+        joined: data.joined,
+      },
+    });
+  };
+  // populate data array
+  populateDataArray = (data) => {
+    const array = [];
+    for (const c of data.outputs[0].data.concepts) {
+      if (c.value > 0.96) {
+        array.push(c.name);
+      }
+    }
+    this.setState({ imageArray: array });
+  };
 
-    const image = document.getElementById('inputImage');
-    const width = Number(image.width);
-    const height = Number(image.height);
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - clarifaiFace.right_col * width,
-      bottomRow: height - clarifaiFace.bottom_row * height,
-    };
-  };
-  displayFaceBox = (box) => {
-    console.log(box);
-    this.setState({ box });
-  };
   onInputChange = (event) => {
     this.setState({
       input: event.target.value,
     });
   };
-  onBtnSubmit = () => {
-    this.setState({ imageUrl: this.state.input });
-    fetch(
-      'https://api.clarifai.com/v2/models/' + 'face-detection' + '/outputs',
-      returnClarifaiRequestOption(this.state.input)
-    )
+  onBtnSubmit = (e) => {
+    e.preventDefault();
+
+    this.setState({ imageUrl: this.state.input, input: '' });
+    fetch('http://localhost:3000/imageurl', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: this.state.input,
+      }),
+    })
       .then((response) => response.json())
-      .then((result) => {
-        this.displayFaceBox(this.calculateFaceLocation(result));
-
-        // regions.forEach((region) => {
-        //   // Accessing and rounding the bounding box values
-        //   const boundingBox = region.region_info.bounding_box;
-        //   const topRow = boundingBox.top_row.toFixed(3);
-        //   const leftCol = boundingBox.left_col.toFixed(3);
-        //   const bottomRow = boundingBox.bottom_row.toFixed(3);
-        //   const rightCol = boundingBox.right_col.toFixed(3);
-
-        //   region.data.concepts.forEach((concept) => {
-        //     // Accessing and rounding the concept value
-        //     const name = concept.name;
-        //     const value = concept.value.toFixed(4);
-
-        //     console.log(
-        //       `${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`
-        //     );
-        //   });
-        // });
+      .then((response) => {
+        console.log(response);
+        if (response) {
+          fetch('http://localhost:3000/image', {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: this.state.user.id,
+            }),
+          })
+            .then((response) => response.json())
+            .then((count) => {
+              this.setState(
+                Object.assign(this.state.user, { entries: count.entries })
+              );
+            })
+            .catch(console.log);
+        }
+        this.populateDataArray(response);
+        this.setState({ isLoading: false });
       })
+      .catch((err) => console.log(err));
 
-      .catch((error) => console.log('error', error));
     this.setState({
       overlayIsHidden: !this.state.overlayIsHidden,
       ImageIsHidden: !this.state.ImageIsHidden,
     });
   };
+
   closeModal = () => {
-    this.setState({ overlayIsHidden: !this.state.overlayIsHidden });
-    this.setState({ ImageIsHidden: !this.state.ImageIsHidden });
+    this.setState({
+      overlayIsHidden: !this.state.overlayIsHidden,
+      ImageIsHidden: !this.state.ImageIsHidden,
+      imageUrl: '',
+      imageArray: [],
+    });
   };
   onRouteChange = (route) => {
     this.setState({ route });
   };
+
   render() {
     return (
       <div className="container mx-auto px-4 ">
@@ -131,6 +120,9 @@ class App extends Component {
             <ImageLinkForm
               onInputChange={this.onInputChange}
               onBtnSubmit={this.onBtnSubmit}
+              userName={this.state.user.name}
+              userEntries={this.state.user.entries}
+              input={this.state.input}
             />
             <Overlay
               overlayIsHidden={this.state.overlayIsHidden}
@@ -140,13 +132,18 @@ class App extends Component {
               closeModal={this.closeModal}
               imageIsHidden={this.state.ImageIsHidden}
               imageUrl={this.state.imageUrl}
-              box={this.state.box}
+              isLoading={this.state.isLoading}
+              // box={this.state.box}
+              imageArray={this.state.imageArray}
             />
           </div>
         ) : this.state.route === 'signin' ? (
-          <SignIn onRouteChange={this.onRouteChange} />
+          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
         ) : (
-          <Regester onRouteChange={this.onRouteChange} />
+          <Regester
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+          />
         )}
         <ParticlesBg type="lines" bg={true} />
       </div>

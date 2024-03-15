@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
 class Overlay extends Component {
-  constructor() {
-    super();
-  }
-
   render() {
     return (
       <div
