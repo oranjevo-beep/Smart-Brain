@@ -62,7 +62,7 @@ class App extends Component {
     e.preventDefault();
 
     this.setState({ imageUrl: this.state.input, input: '' });
-    fetch('http://localhost:3000/imageurl', {
+    fetch('https://lit-springs-27957-286d11650820.herokuapp.com/imageurl', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -73,7 +73,7 @@ class App extends Component {
       .then((response) => {
         console.log(response);
         if (response) {
-          fetch('http://localhost:3000/image', {
+          fetch('https://lit-springs-27957-286d11650820.herokuapp.com/image', {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
