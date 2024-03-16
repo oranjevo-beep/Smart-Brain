@@ -10,9 +10,9 @@ const ImageLinkForm = ({
 }) => {
   return (
     <form className="flex flex-col items-center" onSubmit={onBtnSubmit}>
-      <p className="text-4xl  bg-gradient-to-r from-amber-500 to-pink-500 font-bold text-transparent bg-clip-text mb-10 text-center  md:text-left animate-fade-right lg:max-w-[800px] ">
+      <p className="text-3xl md:text-4xl  bg-gradient-to-r from-amber-500 to-pink-500 font-bold text-transparent bg-clip-text mb-10 text-center  md:text-left animate-fade-right lg:max-w-[800px] ">
         {
-          'This Magic Brain! Throw me a picture. I will try to find the best words to descibe it.'
+          'This is a Magic Brain! Throw me a picture. I will try to find the best words to describe it.'
         }
       </p>
       <Rank userName={userName} userEntries={userEntries} />

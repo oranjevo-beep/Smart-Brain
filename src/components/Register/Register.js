@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Logo from '../Logo/Logo';
-class Regester extends Component {
+class Register extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -48,7 +48,7 @@ class Regester extends Component {
             </div>
 
             <h2 className="mt-2 text-center text-2xl font-bold leading-6 tracking-tight text-gray-900">
-              Regester your account
+              Register your account
             </h2>
           </div>
 
@@ -141,4 +141,4 @@ class Regester extends Component {
     );
   }
 }
-export default Regester;
+export default Register;

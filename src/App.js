@@ -5,7 +5,7 @@ import Navigation from './components/Navigation/Navigation';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Overlay from './components/Overlay/Overlay';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
-import Regester from './components/Regester/Regester';
+import Register from './components/Register/Register';
 import SignIn from './components/SignIn/SignIn';
 
 class App extends Component {
@@ -140,7 +140,7 @@ class App extends Component {
         ) : this.state.route === 'signin' ? (
           <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
         ) : (
-          <Regester
+          <Register
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
           />

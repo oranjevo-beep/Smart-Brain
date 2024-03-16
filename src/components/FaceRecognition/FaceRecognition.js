@@ -45,7 +45,7 @@ const FaceRecognition = ({
       >
         <h3 className="text-md  text-slate-900 font-bold">
           {' '}
-          Most probably I would discribe this picture in these words:
+          Most probably I would describe this picture in these words:
         </h3>
         <p className=" text-sm md:text-md text-slate-700 font-medium">
           {isLoading ? 'Loading...' : imageArray.join(', ')}

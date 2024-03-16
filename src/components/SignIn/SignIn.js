@@ -35,7 +35,7 @@ class SignIn extends Component {
       })
       .catch((err) => console.log(err));
   };
-  onSubmitRegester = () => {
+  onSubmitRegister = () => {
     this.props.onRouteChange('register');
   };
   render() {
@@ -118,11 +118,11 @@ class SignIn extends Component {
             <p className="mt-4 text-center text-sm text-gray-500">
               Not a member?{' '}
               <a
-                onClick={this.onSubmitRegester}
+                onClick={this.onSubmitRegister}
                 href="#"
                 className="font-semibold leading-6 text-orange-400 hover:text-orange-300"
               >
-                Regester now
+                Register now
               </a>
             </p>
           </div>
